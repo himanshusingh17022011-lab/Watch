@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tap Stopwatch</title>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111827;
+      color: white;
+      font-family: Arial, sans-serif;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    .container {
+      text-align: center;
+      width: 100%;
+      padding: 30px 20px;
+    }
+    h1 { margin: 0 0 25px; font-size: 24px; }
+    #timer {
+      font-size: clamp(55px, 15vw, 100px);
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin: 25px 0;
+    }
+    #status { color: #cbd5e1; font-size: 17px; min-height: 25px; }
+    #reset {
+      margin-top: 45px;
+      padding: 14px 38px;
+      border: none;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      background: white;
+      color: #111827;
+    }
+    .hint { margin-top: 20px; color: #94a3b8; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+  <main class="container" id="tapArea">
+    <h1>⏱️ TAP STOPWATCH</h1>
+    <div id="timer">00:00:00</div>
+    <div id="status">Tap anywhere to start</div>
+    <button id="reset">🔄 Reset</button>
+    <div class="hint">Tap anywhere on the screen to Start / Stop</div>
+  </main>
+
+  <script>
+    let seconds = 0;
+    let running = false;
+    let interval = null;
+
+    const timer = document.getElementById("timer");
+    const status = document.getElementById("status");
+    const resetButton = document.getElementById("reset");
+
+    function updateDisplay() {
+      const hrs = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      const secs = seconds % 60;
+
+      timer.textContent =
+        String(hrs).padStart(2, "0") + ":" +
+        String(mins).padStart(2, "0") + ":" +
+        String(secs).padStart(2, "0");
+    }
+
+    function toggleTimer() {
+      if (running) {
+        clearInterval(interval);
+        interval = null;
+        running = false;
+        status.textContent = "Stopped — Tap anywhere to start again";
+      } else {
+        running = true;
+        status.textContent = "Running... Tap anywhere to stop";
+        interval = setInterval(() => {
+          seconds++;
+          updateDisplay();
+        }, 1000);
+      }
+    }
+
+    document.addEventListener("click", (event) => {
+      if (event.target === resetButton || resetButton.contains(event.target)) return;
+      toggleTimer();
+    });
+
+    resetButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      clearInterval(interval);
+      interval = null;
+      running = false;
+      seconds = 0;
+      updateDisplay();
+      status.textContent = "Reset! Tap anywhere to start";
+    });
+  </script>
+
+</body>
+</html>
